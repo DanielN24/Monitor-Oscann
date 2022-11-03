@@ -3,20 +3,20 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const express = require('express');
 require("dotenv").config({ path: "./config.env" });
-const model_distribuidor = require('./db/models/model_distribuidor');
-const model_oscann = require('./db/models/model_oscann');
-const dbo = require("./db/conn");
-const Model_Oscann = require("./model_oscann.json");
-const graphql_Distributor = require("./graphql_distributor.json");
-/// cron request
+
+const dbo = require("./db/conn"); //conecon
+const model_distribuidor = require('./db/models/model_distribuidor');//distributor db model
+const model_oscann = require('./db/models/model_oscann');//oscann db model
+const Model_Oscann = require("./model_oscann.json");//fake hardware device array of objects
+const graphql_Distributor = require("./graphql_distributor.json");//fake (processed) distributor array of objects
+const graphql_response = require("./graphql_response.json"); //fake (original) distributor array of objects 
 const cron = require("node-cron");
+// cron request
 const { http, signs } = require("./util");
-const Model = require('./db/models/model_distribuidor');
-const graphql_response = require("./graphql_response.json");
-var _ = require('lodash');
-//const graphql_Response = require("./graphql_response.json");
 const port = process.env.PORT;
 
+
+//initialize and configure the express API 
 const app = express();
 app.use(cors())
 app.use(express.json());
@@ -36,10 +36,6 @@ app.listen(port, () => {
 const saveGraphql = async (distributor_save) => {
 	let s = new model_distribuidor(distributor_save);
 	await s.save()
-	//Only test
-	/*.then((doc) => {
-		console.log("Distributor:", doc);
-	});*/
 	return
 };
 
@@ -50,39 +46,27 @@ const updateGraphql = async (distribuidor_update) => {
 	);
 };
 
-/*const start = async () => {
-
-	//Only test! - create new database
-	for (idx_gql = 0; idx_gql < Model_Oscann.length; idx_gql++) {
-		await saveGraphql(Model_Oscann[idx_gql]);
-	}
-};
-
-start();
-*/
 class Main {
 	static async get_summary_endpoint() {
-		//summary_endpoint = await http.get("/" + "").data; //endpoint from graphql API
-
-		console.log("funciton Cron")
-
-		//Model.collection.insertOne({todayHoroscope})
-		var dict = graphql_response;
-		//array of max
-		let max_D = []
+		//summary_endpoint = await http.get("/" + "").data; //enHere should go the real endpoint		
+	
+var dict = graphql_response;
+	 //Here Should go the response of the real request	
+	 //arArrays used to get the maximum from the request	
+	    let max_D = []
 		let max_DH = []
 		let max_H = []
 		let max_Oscann = []
 		let max_OSCAN = []
 		let max_HOSP = []
 		let MAX_DH = []
-		//max values
+		//maVariables to store the partial maximums	
 		let max_oscann_D = 0
 		let max_oscann_H = 0
 		let max_oscann_DH = 0
 		let max_oscann = 0
 
-		//try to extract the max status
+		//trloop to extract the maximums	
 		for (let idx_res = 0; idx_res < dict.length; idx_res++) {
 			for (let idx__dh = 0; idx__dh < dict[idx_res].Distribuidores_hospitalarios.length; idx__dh++) {
 				for (let id_H = 0; id_H < dict[idx_res].Distribuidores_hospitalarios[idx__dh].Hospitales.length; id_H++) {
@@ -120,11 +104,14 @@ class Main {
 			max_D = []
 		}
 
-		var dictstring = JSON.stringify(dict);
-		var fs = require('fs');
+
+
+		//Write on the new file the processed data	
+		let dictstring = JSON.stringify(dict);
+		let fs = require('fs');
 		fs.writeFileSync("graphql_distributor.json", dictstring);
 		
-
+		//Here the data from backup is taken to be processed	
 		model_distribuidor.find({}, async function (err, data) {
 			if (data == 0) {
 				console.log("endpoint")
@@ -149,6 +136,8 @@ class Main {
 	}
 }
 
+
+//Here the cron function is defined
 cron.schedule("* * * * *", () => {
 	Main.get_summary_endpoint();
 });

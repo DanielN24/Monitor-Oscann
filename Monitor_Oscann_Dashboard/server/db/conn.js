@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const mongoString = process.env.ATLAS_URI;
 
+//Here the function to connect to the database through mongoose
+
 module.exports = {
   connectToServer: function (callback) {
     mongoose.connect(mongoString, {

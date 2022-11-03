@@ -14,6 +14,7 @@ function Sidebar() {
     const [records, setRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState("")
     const [idInterval, setIdInterval] = useState(null)
+    
     const getRecords = async () => {
         const response = await fetch(URL);
         const records = await response.json();
@@ -33,10 +34,12 @@ function Sidebar() {
         getRecords();
     }, []);
 
+    // icons with the respective color to use in the sidebar
     const iconColorGreen = <FaRegThumbsUp className='mySubIcon2' style={{ color: 'green' }} />
     const iconColorOrange = <TbAlertTriangle className='mySubIcon2' style={{ color: 'orange' }} />
     const iconColorRed = <IoMdCloseCircleOutline className='mySubIcon2' style={{ color: 'red' }} />
 
+    // condition used to open and close the sidebar
     const [isOpen, setIsOpen] = useState()
     if (!isOpen) {
         return (
@@ -61,10 +64,12 @@ function Sidebar() {
                                     placeholder="Search..."
                                     onChange={event => { setSearchTerm(event.target.value) }}
                                 />
-
                             </div>
-                            <div className='mennu2' >
+                            <div className='mennu2' > 
+                                
                                 {records.filter((loop) => {
+                                // condition used to filter the distributors by the name in the search bar
+                                // also you can search it in lower case or upper case
                                     if (searchTerm === ""){
                                         return loop
                                     }
@@ -72,6 +77,7 @@ function Sidebar() {
                                         return loop
                                     }
                                     return false;
+                                // this code allows to renderize the hierarchy sidebar and also add the respective icon for each menu and sub menus
                                 }).map((loop, index) => (
                                     <div className='Menu' key={index}>
                                         <SubMenu className='nameDis' title={loop.nombre_distribuidor} key={index} icon={
@@ -95,7 +101,7 @@ function Sidebar() {
                                                                 <div  key={index}><MenuItem  icon={
                                                                     (loop3.Maximo_oscann === 0 ? iconColorGreen : (loop3.Maximo_oscann === 1 ? iconColorOrange : iconColorRed))
                                                                     }>
-                                                                    <div className='namesOscann' key={index}>
+                                                                    <div className='nameDevices' key={index}>
                                                                          <Link to={`/Device/${loop3.id_oscann}/${loop3.NAME}/${loop2.hospital_name}/${loop1.DH_name}/${loop.nombre_distribuidor}`} style={{ color: 'inherit' }}>{loop3.NAME} </Link>
                                                                     </div></MenuItem>
                                                                 </div>

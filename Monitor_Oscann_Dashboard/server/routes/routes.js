@@ -4,8 +4,9 @@ const router = express.Router();
 const model_distribuidor = require('../db/models/model_distribuidor');
 const model_oscann = require('../db/models/model_oscann');
 
-//Reboot hardware
-//const Reboot = await fetch(`http://localhost:4600/api/Reboot`);
+//Here the code of the API over Express
+
+//Endpoint to allow a reboot of the hardware device
 router.get('/Reboot', async (req, res) => {
     try {
         res.json("rebooted!")
@@ -15,7 +16,7 @@ router.get('/Reboot', async (req, res) => {
     }
 })
 
-//Get all Method
+//Get the summary from backup
 router.get('/getAll', async (req, res) => {
     try {
         const data = await model_distribuidor.find();
@@ -26,7 +27,7 @@ router.get('/getAll', async (req, res) => {
     }
 })
 
-//Get by ID Method - get Backup
+//Get the hardware detail from backup
 router.get('/getOne/:id', async (req, res) => {
     try {
         const data = await model_oscann.findOne({ id_oscann: req.params.id.toString() });
@@ -37,7 +38,7 @@ router.get('/getOne/:id', async (req, res) => {
     }
 })
 
-//Post Method - create/update Backup
+//Post the hardware detail to backup
 router.post('/store_detail', async (req, res) => {
     model_oscann.findOne({ id_oscann: req.body.id_oscann.toString() }, async function (err, data) {
         if (data == null) {
@@ -79,35 +80,5 @@ router.post('/store_detail', async (req, res) => {
         }
     }).sort({ updatedAt: -1 }).select('-_id -createdAt -updatedAt -__v');
 })
-
-
-/*
-//Update by ID Method
-router.patch('/update/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const updatedData = req.body;
-        const options = { new: true };
-        const result = await model_distribuidor.findByIdAndUpdate(
-            id, updatedData, options
-        )
-        res.send(result)
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-})
-
-//Delete by ID Method
-router.delete('/delete/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const data = await model_distribuidor.findByIdAndDelete(id)
-        res.send(`Document with ${data.name} has been deleted..`)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})*/
 
 module.exports = router;
